@@ -27,9 +27,15 @@ Copy this as a reference while updating your `appsettings.json` file.
 
 ### BitBucket Section
 ```json
-"AccessToken": "your-bitbucket-token"
+"AppPassword": "your-bitbucket-app-password",
+"Username": "your-bitbucket-username"
 ```
-**Replace with:** App password from https://bitbucket.org/account/settings/app-passwords/
+**Replace with:** 
+- **App Password** (until Sept 9, 2025): From https://bitbucket.org/account/settings/app-passwords/
+- **API Token** (after Sept 9, 2025): From https://id.atlassian.com/manage-profile/security/api-tokens
+- **Username**: Your BitBucket username
+
+> **Transition Note**: BitBucket App Passwords will be deprecated on September 9, 2025. After this date, use `ApiToken` instead of `AppPassword` and authenticate with your Atlassian API token.
 
 ```json
 "WorkspaceOrOrganization": "your-workspace"
@@ -60,7 +66,8 @@ Copy this as a reference while updating your `appsettings.json` file.
     {
       "Name": "BitBucket",
       "BaseUrl": "https://api.bitbucket.org",
-      "AccessToken": "ATBBxxxxxxxxxxxxxxxxxx",
+      "AppPassword": "ATBBxxxxxxxxxxxxxxxxxx",
+      "Username": "john.doe",
       "WorkspaceOrOrganization": "acmetech",
       "IsDefault": true,
       "AdditionalSettings": {

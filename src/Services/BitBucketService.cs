@@ -23,8 +23,21 @@ public class BitBucketService : BaseRepositoryService
     private void ConfigureHttpClient()
     {
         _httpClient.BaseAddress = new Uri(_config.BaseUrl.TrimEnd('/'));
-        _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _config.AccessToken);
+
+        // Use Basic Authentication with username and app password for BitBucket
+        // After Sept 9, 2025, this will transition to API tokens
+        var token = !string.IsNullOrEmpty(_config.AppPassword) ? _config.AppPassword :
+                    !string.IsNullOrEmpty(_config.ApiToken) ? _config.ApiToken :
+                    _config.AccessToken; // Legacy fallback
+
+        if (!string.IsNullOrEmpty(_config.Username) && !string.IsNullOrEmpty(token))
+        {
+            var authValue = Convert.ToBase64String(
+                System.Text.Encoding.UTF8.GetBytes($"{_config.Username}:{token}"));
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Basic", authValue);
+        }
+
         _httpClient.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
     }

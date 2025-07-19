@@ -63,7 +63,8 @@ This file explains how to configure `appsettings.json` for the Tasked applicatio
     {
       "Name": "BitBucket",
       "BaseUrl": "https://api.bitbucket.org",
-      "AccessToken": "ATBBxxx...",
+      "AppPassword": "ATBBxxx...",
+      "Username": "your-bitbucket-username",
       "WorkspaceOrOrganization": "mycompany",
       "IsDefault": true,
       "AdditionalSettings": {

@@ -81,7 +81,10 @@ If you prefer to configure manually or need to understand the configuration stru
   - [ ] Pull requests: Write ✅
   - [ ] Issues: Read ✅ (optional)
 - [ ] **Copy the password immediately** (you can't see it again!)
-- [ ] Update `appsettings.json` → `RepositoryProviders[0].AccessToken`
+- [ ] Update `appsettings.json` → `RepositoryProviders[0].AppPassword`
+- [ ] Update `appsettings.json` → `RepositoryProviders[0].Username`
+
+> **Note**: After September 9, 2025, BitBucket will deprecate App Passwords in favor of API Tokens. Update your configuration to use `ApiToken` instead of `AppPassword` and authenticate with your Atlassian API token.
 
 ### [ ] 4. BitBucket Workspace Details
 - [ ] Find your BitBucket workspace name (visible in URLs)

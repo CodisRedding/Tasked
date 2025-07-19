@@ -147,12 +147,16 @@ This wizard will:
        {
          "Name": "BitBucket",
          "BaseUrl": "https://api.bitbucket.org",
-         "AccessToken": "your-bitbucket-token",
+         "AppPassword": "your-bitbucket-app-password",
+         "Username": "your-bitbucket-username",
          "WorkspaceOrOrganization": "your-workspace",
          "IsDefault": true
        }
      ]
    }
+   ```
+
+   > **Note:** BitBucket App Passwords will transition to API Tokens on September 9, 2025. After this date, replace `AppPassword` with `ApiToken` and use your Atlassian API token instead.
    ```
 
 ### Running the Application

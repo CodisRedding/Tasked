@@ -26,7 +26,10 @@ public class RepositoryProviderConfiguration
 {
     public string Name { get; set; } = string.Empty; // BitBucket, GitLab, etc.
     public string BaseUrl { get; set; } = string.Empty;
-    public string AccessToken { get; set; } = string.Empty;
+    public string AccessToken { get; set; } = string.Empty; // Legacy - for backward compatibility
+    public string AppPassword { get; set; } = string.Empty; // BitBucket App Password (until Sept 2025)
+    public string ApiToken { get; set; } = string.Empty; // BitBucket API Token (after Sept 2025)
+    public string Username { get; set; } = string.Empty; // BitBucket username
     public string? WorkspaceOrOrganization { get; set; }
     public bool IsDefault { get; set; } = false;
     public Dictionary<string, string> AdditionalSettings { get; set; } = new();

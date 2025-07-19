@@ -133,16 +133,22 @@ public class TokenUpdateService
 
         // Check what tokens are configured
         var jiraToken = config["Jira:ApiToken"];
-        var repoToken = config["RepositoryProviders:0:AccessToken"];
+        var repoAppPassword = config["RepositoryProviders:0:AppPassword"];
+        var repoApiToken = config["RepositoryProviders:0:ApiToken"];
+        var repoAccessToken = config["RepositoryProviders:0:AccessToken"]; // Legacy
 
         if (!string.IsNullOrEmpty(jiraToken) && jiraToken != "your-api-token")
         {
             choices.Add("Jira API Token");
         }
 
-        if (!string.IsNullOrEmpty(repoToken) && repoToken != "your-bitbucket-token")
+        var hasRepoCredential = (!string.IsNullOrEmpty(repoAppPassword) && repoAppPassword != "your-bitbucket-app-password") ||
+                               (!string.IsNullOrEmpty(repoApiToken) && repoApiToken != "your-bitbucket-api-token") ||
+                               (!string.IsNullOrEmpty(repoAccessToken) && repoAccessToken != "your-bitbucket-token");
+
+        if (hasRepoCredential)
         {
-            choices.Add("BitBucket App Password");
+            choices.Add("BitBucket Credentials");
         }
 
         if (!choices.Any())
@@ -161,7 +167,7 @@ public class TokenUpdateService
         return selection switch
         {
             "Jira API Token" => TokenType.Jira,
-            "BitBucket App Password" => TokenType.BitBucket,
+            "BitBucket Credentials" => TokenType.BitBucket,
             _ => TokenType.None
         };
     }
@@ -209,41 +215,85 @@ public class TokenUpdateService
     /// </summary>
     private async Task<bool> UpdateBitBucketTokenAsync()
     {
-        AnsiConsole.Write(new Rule("[bold blue]🔑 Update BitBucket App Password[/]").RuleStyle("blue"));
+        // Determine credential type based on date
+        var appPasswordEndDate = new DateTime(2025, 9, 9);
+        var today = DateTime.UtcNow;
+        bool useAppPassword = today < appPasswordEndDate;
+
+        string credentialType = useAppPassword ? "App Password" : "API Token";
+        string title = useAppPassword ? "🔑 Update BitBucket App Password" : "🔑 Update BitBucket API Token";
+
+        AnsiConsole.Write(new Rule($"[bold blue]{title}[/]").RuleStyle("blue"));
         AnsiConsole.WriteLine();
 
-        AnsiConsole.MarkupLine("Let's replace your BitBucket App Password with a new one.");
+        AnsiConsole.MarkupLine($"Let's replace your BitBucket {credentialType} with a new one.");
         AnsiConsole.WriteLine();
 
-        // Instructions for creating new App Password
-        AnsiConsole.MarkupLine("[bold yellow]📝 Create a New App Password:[/]");
-        AnsiConsole.MarkupLine("1. Open: [link]https://bitbucket.org/account/settings/app-passwords/[/]");
-        AnsiConsole.MarkupLine("2. Click [bold]'Create app password'[/]");
-        AnsiConsole.MarkupLine("3. Name: [bold]'Tasked Application (Updated)'[/]");
-        AnsiConsole.MarkupLine("4. [bold]Required Permissions:[/]");
-        AnsiConsole.MarkupLine("   • Repositories: Read ✅");
-        AnsiConsole.MarkupLine("   • Repositories: Write ✅");
-        AnsiConsole.MarkupLine("   • Pull requests: Read ✅");
-        AnsiConsole.MarkupLine("   • Pull requests: Write ✅");
-        AnsiConsole.MarkupLine("5. [bold red]⚠️  Copy the new password immediately![/]");
-        AnsiConsole.MarkupLine("6. [bold]Optionally:[/] Delete your old App Password for security");
-        AnsiConsole.WriteLine();
-
-        if (!AnsiConsole.Confirm("Have you created the new App Password and copied it?"))
+        if (useAppPassword)
         {
-            AnsiConsole.MarkupLine("[yellow]Please create the new App Password first, then try again.[/]");
+            // Instructions for creating new App Password
+            AnsiConsole.MarkupLine("[bold yellow]📝 Create a New App Password:[/]");
+            AnsiConsole.MarkupLine("1. Open: [link]https://bitbucket.org/account/settings/app-passwords/[/]");
+            AnsiConsole.MarkupLine("2. Click [bold]'Create app password'[/]");
+            AnsiConsole.MarkupLine("3. Name: [bold]'Tasked Application (Updated)'[/]");
+            AnsiConsole.MarkupLine("4. [bold]Required Permissions:[/]");
+            AnsiConsole.MarkupLine("   • Repositories: Read ✅");
+            AnsiConsole.MarkupLine("   • Repositories: Write ✅");
+            AnsiConsole.MarkupLine("   • Pull requests: Read ✅");
+            AnsiConsole.MarkupLine("   • Pull requests: Write ✅");
+            AnsiConsole.MarkupLine("5. [bold red]⚠️  Copy the new password immediately![/]");
+            AnsiConsole.MarkupLine("6. [bold]Optionally:[/] Delete your old App Password for security");
+            AnsiConsole.WriteLine();
+            AnsiConsole.MarkupLine("[dim]Note: App Passwords will be deprecated on September 9, 2025 in favor of API Tokens.[/]");
+        }
+        else
+        {
+            // Instructions for creating new API Token
+            AnsiConsole.MarkupLine("[bold yellow]📝 Create a New API Token:[/]");
+            AnsiConsole.MarkupLine("1. Open: [link]https://id.atlassian.com/manage-profile/security/api-tokens[/]");
+            AnsiConsole.MarkupLine("2. Click [bold]'Create API token'[/]");
+            AnsiConsole.MarkupLine("3. Label: [bold]'Tasked Application (Updated)'[/]");
+            AnsiConsole.MarkupLine("4. [bold red]⚠️  Copy the new token immediately![/]");
+            AnsiConsole.MarkupLine("5. [bold]Optionally:[/] Delete your old token for security");
+            AnsiConsole.WriteLine();
+        }
+
+        if (!AnsiConsole.Confirm($"Have you created the new {credentialType} and copied it?"))
+        {
+            AnsiConsole.MarkupLine($"[yellow]Please create the new {credentialType} first, then try again.[/]");
             return false;
         }
 
-        // Get new App Password
-        string newAppPassword = AnsiConsole.Prompt(
-            new TextPrompt<string>("Paste your new App Password:")
+        // Get new credential
+        string newCredential = AnsiConsole.Prompt(
+            new TextPrompt<string>($"Paste your new {credentialType}:")
                 .Secret('*'));
 
-        // Update configuration
-        await UpdateConfigurationValueAsync("RepositoryProviders:0:AccessToken", newAppPassword);
+        // Update configuration - use the appropriate field
+        string configKey = useAppPassword ? "RepositoryProviders:0:AppPassword" : "RepositoryProviders:0:ApiToken";
+        await UpdateConfigurationValueAsync(configKey, newCredential);
 
-        AnsiConsole.MarkupLine("[green]✅ BitBucket App Password updated![/]");
+        // Also get username if using App Password and not already set
+        if (useAppPassword)
+        {
+            // Load current configuration to check if username exists
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile(_localConfigPath, optional: true)
+                .Build();
+
+            var existingUsername = config["RepositoryProviders:0:Username"];
+            if (string.IsNullOrEmpty(existingUsername))
+            {
+                string username = AnsiConsole.Prompt(
+                    new TextPrompt<string>("Enter your BitBucket username:")
+                        .DefaultValue("rockyassad"));
+                await UpdateConfigurationValueAsync("RepositoryProviders:0:Username", username);
+            }
+        }
+
+        AnsiConsole.MarkupLine($"[green]✅ BitBucket {credentialType} updated![/]");
         return true;
     }
 
