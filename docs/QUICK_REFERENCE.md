@@ -1,4 +1,48 @@
-# 🔧 Quick Reference: appsettings.json Values to Replace
+# 🔧 Quick Reference Guide
+
+## 🚀 Essential Commands
+
+```bash
+dotnet run --setup          # Interactive configuration wizard
+dotnet run --token-health   # Check API token status  
+dotnet run --update-token   # Replace expired tokens
+dotnet run                  # Run main application
+```
+
+## 📁 Key Files
+
+- `appsettings.json` - Template config (commit this)
+- `appsettings.local.json` - Real credentials (NEVER commit)
+- `docs/SETUP_GUIDE.md` - Complete setup instructions
+- `docs/CONFIGURATION.md` - Detailed configuration reference
+- `docs/TODO.md` - Development tasks and roadmap
+
+## 🔧 Recent Major Features
+
+- ✅ Progressive configuration saving
+- ✅ Smart existing config detection  
+- ✅ Token health monitoring system
+- ✅ JQL-based task queries
+- ✅ BitBucket workspace auto-discovery
+- ✅ Provider-specific UI labels
+- ✅ Zero compiler warnings
+
+## 🛡️ Security Notes
+
+- Real credentials ONLY in `appsettings.local.json`
+- This file is gitignored - never commit it
+- Use placeholder values in `appsettings.json` template
+
+## 🐛 Troubleshooting
+
+1. Check `appsettings.local.json` for current config
+2. Run `dotnet run --token-health` to test connections
+3. Delete `appsettings.local.json` to reset setup
+4. Ensure `dotnet build` shows zero warnings
+
+---
+
+## 📝 Configuration Reference: appsettings.json Values to Replace
 
 Copy this as a reference while updating your `appsettings.json` file.
 

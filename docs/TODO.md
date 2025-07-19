@@ -1,212 +1,136 @@
-# 📋 Tasked Setup Guide
+# 📋 Development TODO
 
-This guide shows you how to set up Tasked - the automated task management system that bridges Jira with your repositories.
+This file tracks actual development tasks, bugs, and feature requests for the Tasked project.
 
-## 🚀 Quick Start (Recommended)
+## 🐛 Bugs to Fix
 
-**Interactive Setup Wizard** - *Time: 10-15 minutes*
+### High Priority
 
-```bash
-dotnet run --setup
-```
+- [ ] Fix any remaining null reference warnings in the codebase
+- [ ] Handle network timeout errors more gracefully in API calls
+- [ ] Improve error messages when API tokens are invalid or expired
 
-The setup wizard automates the entire configuration process with step-by-step guidance for:
-- Jira API token creation with visual instructions
-- Repository provider setup (BitBucket, GitLab, GitHub)
-- Workflow preferences configuration
-- Automatic connection testing
+### Medium Priority
 
-## 🔐 Token Health Monitoring
+- [ ] Add better validation for Jira project keys
+- [ ] Handle rate limiting from Jira/BitBucket APIs
+- [ ] Improve handling of special characters in task titles for branch names
 
-**Monitor API Token Status** - *Time: 30 seconds*
+### Low Priority
 
-```bash
-dotnet run --token-health
-```
+- [ ] Add more detailed logging for debugging
+- [ ] Optimize database queries for better performance
 
-Regular token health checks help you:
-- **Detect expiring tokens** before they break automation
-- **Validate permissions** for all configured services
-- **Troubleshoot connection issues** with detailed error reporting
-- **Get renewal reminders** with direct links to token management
+## ✨ Features to Add
 
-**Recommended**: Run token health checks weekly or when experiencing connection issues.
+### Repository Providers (High Priority)
 
-## 🔄 Token Replacement
+- [ ] Add support for GitHub as a repository provider
+- [ ] Add support for GitLab as a repository provider
+- [ ] Implement automatic token refresh for supported APIs
+- [ ] Add webhook support for real-time Jira updates
 
-**Replace Expired/Compromised Tokens** - *Time: 5-10 minutes*
+### Configuration & Management (Medium Priority)
 
-```bash
-dotnet run --update-token
-```
+- [ ] Add configuration validation on startup
+- [ ] Implement task assignment based on user preferences
+- [ ] Add support for multiple Jira projects
+- [ ] Create dashboard/web UI for monitoring tasks
 
-Interactive token replacement when you need to:
-- **Replace expired tokens** without losing other settings
-- **Update compromised credentials** quickly and securely
-- **Rotate tokens regularly** for security best practices
-- **Fix authentication issues** with guided token recreation
+### Additional Features (Low Priority)
 
-**Features**: Status display, selective replacement, automatic testing, configuration preservation.
+- [ ] Add export functionality for task reports
+- [ ] Implement task templates for common workflows
+- [ ] Add integration with popular IDEs (VS Code extension)
+- [ ] Support for custom field mapping between Jira and repositories
 
----
+## 🔧 Technical Improvements
 
-## 📖 Manual Setup (Alternative)
+### Code Quality
 
-If you prefer to configure manually or need to understand the configuration structure:
+- [ ] Add comprehensive unit tests for all services
+- [ ] Set up integration tests with mock APIs
+- [ ] Implement proper dependency injection container
+- [ ] Add API documentation/OpenAPI specs
 
-## 🔑 Authentication & Credentials
+### Performance
 
-### [ ] 1. Jira API Token
-- [ ] Go to [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-- [ ] Click "Create API token"
-- [ ] Label: "Tasked Application"
-- [ ] **Copy the token immediately** (you can't see it again!)
-- [ ] Update `appsettings.json` → `Jira.ApiToken`
+- [ ] Implement caching for frequent API calls
+- [ ] Add background processing for long-running tasks
+- [ ] Optimize database schema and queries
+- [ ] Add connection pooling for database operations
 
-### [ ] 2. Jira Configuration Details
-- [ ] Find your Jira domain (e.g., `https://mycompany.atlassian.net`)
-- [ ] Update `appsettings.json` → `Jira.BaseUrl`
-- [ ] Update `appsettings.json` → `Jira.Username` (your Atlassian email)
-- [ ] Find your project key (2-5 letters, visible in Jira project URL)
-- [ ] Update `appsettings.json` → `Jira.Project`
+### Security
 
-### [ ] 3. BitBucket App Password
-- [ ] Go to [BitBucket App Passwords](https://bitbucket.org/account/settings/app-passwords/)
-- [ ] Click "Create app password"
-- [ ] Name: "Tasked Application"
-- [ ] **Required Permissions:**
-  - [ ] Repositories: Read ✅
-  - [ ] Repositories: Write ✅
-  - [ ] Pull requests: Read ✅
-  - [ ] Pull requests: Write ✅
-  - [ ] Issues: Read ✅ (optional)
-- [ ] **Copy the password immediately** (you can't see it again!)
-- [ ] Update `appsettings.json` → `RepositoryProviders[0].AppPassword`
-- [ ] Update `appsettings.json` → `RepositoryProviders[0].Username`
+- [ ] Implement proper secret management (Azure Key Vault, etc.)
+- [ ] Add token encryption at rest
+- [ ] Implement audit logging for all operations
+- [ ] Add role-based access control
 
-> **Note**: After September 9, 2025, BitBucket will deprecate App Passwords in favor of API Tokens. Update your configuration to use `ApiToken` instead of `AppPassword` and authenticate with your Atlassian API token.
+## 📚 Documentation
 
-### [ ] 4. BitBucket Workspace Details
-- [ ] Find your BitBucket workspace name (visible in URLs)
-- [ ] Update `appsettings.json` → `RepositoryProviders[0].WorkspaceOrOrganization`
-- [ ] If using BitBucket Projects, find your project key
-- [ ] Update `appsettings.json` → `RepositoryProviders[0].AdditionalSettings.ProjectKey`
+### User Documentation
 
-## ⚙️ Configuration Customization
+- [ ] Create video tutorials for setup process
+- [ ] Add troubleshooting guide with common issues
+- [ ] Document all configuration options
+- [ ] Create migration guide for major version updates
 
-### [ ] 5. Jira Status Filters
-- [ ] Review your Jira workflow statuses
-- [ ] Update `appsettings.json` → `Jira.StatusFilter` with relevant statuses:
-  - Common options: "To Do", "In Progress", "Ready for Development", "Code Review"
-- [ ] Adjust `SyncIntervalMinutes` if needed (default: 15 minutes)
+### Developer Documentation
 
-### [ ] 6. Workflow Preferences
-- [ ] **RequireHumanApproval**: 
-  - [ ] `true` = Manual review of all automated actions (recommended for start)
-  - [ ] `false` = Fully automated (use after testing)
-- [ ] **AutoCreateRepositories**: 
-  - [ ] `false` = Safer, assign to existing repos only (recommended)
-  - [ ] `true` = Create new repositories automatically
-- [ ] **AutoCreateBranches**: 
-  - [ ] `true` = Automatically create feature branches (recommended)
-  - [ ] `false` = Manual branch creation only
-- [ ] **AutoUpdateJira**: 
-  - [ ] `true` = Update Jira with progress (recommended)
-  - [ ] `false` = No Jira updates
-- [ ] **MaxConcurrentTasks**: Adjust based on your needs (3-5 recommended)
+- [ ] Add API documentation
+- [ ] Create contributing guidelines
+- [ ] Document architecture and design decisions
+- [ ] Add code examples for extending the system
 
-## 🛠️ Technical Setup
+## 🚀 Deployment & Operations
 
-### [ ] 7. .NET SDK Issues Resolution
-- [ ] **Try Method 1**: Download and reinstall .NET SDK from [official site](https://dotnet.microsoft.com/download)
-- [ ] **Try Method 2**: Remove conflicting Homebrew installations
-  ```bash
-  brew list | grep dotnet
-  brew uninstall --cask [any-dotnet-packages-found]
-  ```
-- [ ] **Try Method 3**: Use .NET uninstall tool for clean reinstall
-- [ ] **Try Method 4**: Set environment variable workaround
-  ```bash
-  echo 'export MSBuildEnableWorkloadResolver=false' >> ~/.zshrc
-  source ~/.zshrc
-  ```
-- [ ] **Test**: Run `dotnet restore` in the Tasked directory
+### CI/CD
 
-### [ ] 8. Build and Test Application
-- [ ] Navigate to Tasked directory: `cd /Users/rocky.assad/code/Tasked`
-- [ ] Restore packages: `dotnet restore`
-- [ ] Build project: `dotnet build`
-- [ ] Run application: `dotnet run`
+- [ ] Set up automated testing pipeline
+- [ ] Add automated security scanning
+- [ ] Implement automated releases
+- [ ] Add deployment scripts for different environments
 
-## 🧪 Initial Testing
+### Monitoring
 
-### [ ] 9. Test Jira Connection
-- [ ] Run the application
-- [ ] Try "🔄 Sync from Jira" option
-- [ ] Verify tasks are being fetched
-- [ ] Check for any authentication errors
+- [ ] Add health check endpoints
+- [ ] Implement application metrics
+- [ ] Add alert configuration for failures
+- [ ] Create operational dashboards
 
-### [ ] 10. Test Repository Connection
-- [ ] Ensure you have at least one repository in your BitBucket workspace
-- [ ] Run task processing
-- [ ] Verify repository assignment works
-- [ ] Test branch creation (if enabled)
+## 📋 Project Management
 
-### [ ] 11. Test Workflow
-- [ ] Process a simple task end-to-end
-- [ ] Verify Jira comments are added
-- [ ] Check branch naming convention: `feature/{jira-key}-{task-title}`
-- [ ] Test approval/rejection workflow
+### Next Release (v1.1)
 
-## 📁 Optional Enhancements
+- [ ] GitHub provider support
+- [ ] Improved error handling
+- [ ] Configuration validation
+- [ ] Basic unit test coverage
 
-### [ ] 12. Security Hardening
-- [ ] Create `appsettings.local.json` for local overrides (already in .gitignore)
-- [ ] Consider using environment variables for sensitive data:
-  ```json
-  "ApiToken": "${JIRA_API_TOKEN}"
-  ```
-- [ ] Set up token rotation schedule (recommended: every 90 days)
+### Future Releases
 
-### [ ] 13. Additional Repository Providers
-- [ ] Plan GitLab integration (if needed)
-- [ ] Plan GitHub integration (if needed)
-- [ ] Configure multiple repository providers
+- [ ] Web UI dashboard
+- [ ] Webhook support
+- [ ] Multi-project support
+- [ ] Advanced workflow customization
 
-## 🚨 Security Reminders
+## 🔄 Ongoing Tasks
 
-- [ ] **NEVER** commit real credentials to version control
-- [ ] Use app passwords/tokens, not your main account passwords
-- [ ] Regularly rotate API tokens and app passwords
-- [ ] Test with a non-production Jira project first
-- [ ] Backup your configuration before making changes
+### Maintenance
 
-## 📝 Documentation
-
-### [ ] 14. Create Your Personal Config Notes
-- [ ] Document your Jira project structure
-- [ ] Note your repository naming conventions
-- [ ] Record any custom workflow requirements
-- [ ] Document team-specific status mappings
-
-## ✅ Ready to Go!
-
-When all items above are complete:
-- [ ] Application builds and runs without errors
-- [ ] Jira sync works and fetches relevant tasks
-- [ ] Repository assignment and branch creation work
-- [ ] Manual approval workflow is functional
-- [ ] Jira updates are being posted
+- [ ] Keep dependencies up to date
+- [ ] Monitor for security vulnerabilities
+- [ ] Update documentation as features change
+- [ ] Review and respond to user feedback
 
 ---
 
-## 🆘 Need Help?
+## 📝 Notes
 
-If you encounter issues:
-1. Check the console output for specific error messages
-2. Verify network connectivity to Jira and BitBucket
-3. Test API credentials using their web interfaces first
-4. Review the `CONFIGURATION.md` file for detailed setup instructions
-5. Check the application logs for detailed error information
+- This TODO list should be reviewed and updated regularly
+- High priority items should be addressed in the next sprint/release
+- Consider user feedback when prioritizing features
+- Technical debt items should be balanced with new features
 
-**Estimated Setup Time**: 30-45 minutes (excluding .NET SDK troubleshooting)
+**Last Updated**: July 19, 2025
