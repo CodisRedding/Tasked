@@ -1,6 +1,6 @@
 # Tasked - Automated Task Management System
 
-**Tasked** is an automated task management system that bridges Jira with source control platforms (BitBucket, GitLab) and tracks progress locally using SQLite. It helps developers automate the workflow from task assignment to repository management.
+**Tasked** is an automated task management system that bridges Jira with source control platforms (BitBucket, GitLab) and tracks progress locally using SQLite. It helps developers automate the workflow from task assignment to repository management. (WIP, it's much more than this.)
 
 ## 🚀 Features
 
